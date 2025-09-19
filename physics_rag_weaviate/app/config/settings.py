@@ -55,6 +55,9 @@ class Settings:
         "http://localhost:3002",  # Another alternative port
         "http://127.0.0.1:3001",
         "http://127.0.0.1:3002",
+        "https://*.vercel.app",  # Vercel deployments
+        "https://braindrop.vercel.app",  # Production frontend
+        "https://braindrop-*.vercel.app",  # Preview deployments
     ]
     
     # Health Check
