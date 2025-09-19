@@ -52,6 +52,9 @@ class Settings:
         "http://localhost:3000",  # Next.js dev server
         "http://localhost:3001",  # Alternative port
         "http://127.0.0.1:3000",
+        "http://localhost:3002",  # Another alternative port
+        "http://127.0.0.1:3001",
+        "http://127.0.0.1:3002",
     ]
     
     # Health Check
