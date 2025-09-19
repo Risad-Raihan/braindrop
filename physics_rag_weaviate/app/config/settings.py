@@ -5,6 +5,10 @@ Configuration settings for Physics RAG API with Weaviate
 import os
 from pathlib import Path
 from typing import Optional
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 
 class Settings:
@@ -16,15 +20,15 @@ class Settings:
     API_DESCRIPTION: str = "Bengali Physics RAG System using Weaviate Vector Database"
     
     # Google AI Configuration
-    GOOGLE_API_KEY: str = os.getenv("GOOGLE_API_KEY", "GOOGLE_API")  # Replace with your key
+    GOOGLE_API_KEY: str = os.getenv("GOOGLE_API_KEY", "your_actual_google_api_key_here")
     EMBEDDING_MODEL: str = "models/gemini-embedding-001"
     GENERATION_MODEL: str = "gemini-2.5-flash"
     
     # Weaviate Configuration
-    WEAVIATE_URL: str = os.getenv("WEAVIATE_URL", "http://localhost:8080")  # Default to localhost
-    WEAVIATE_API_KEY: str = os.getenv("WEAVIATE_API_KEY", "")  # Empty for localhost
+    WEAVIATE_URL: str = os.getenv("WEAVIATE_URL", "your_weaviate_cluster_url_here")
+    WEAVIATE_API_KEY: str = os.getenv("WEAVIATE_API_KEY", "your_weaviate_api_key_here")
     WEAVIATE_COLLECTION: str = "PhysicsChunk"
-    USE_LOCAL_WEAVIATE: bool = os.getenv("USE_LOCAL_WEAVIATE", "true").lower() == "true"
+    USE_LOCAL_WEAVIATE: bool = os.getenv("USE_LOCAL_WEAVIATE", "false").lower() == "true"
     
     # File Paths
     BASE_DIR: Path = Path(__file__).parent.parent.parent

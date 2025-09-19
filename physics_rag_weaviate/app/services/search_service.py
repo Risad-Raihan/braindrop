@@ -152,10 +152,25 @@ class WeaviateSearchService:
             # Format results
             formatted_results = []
             for rank, obj in enumerate(results.objects):
+                # Get score from metadata, default to a calculated score based on rank
+                score = 0.0
+                if hasattr(obj, 'metadata') and obj.metadata:
+                    if hasattr(obj.metadata, 'score') and obj.metadata.score is not None:
+                        score = float(obj.metadata.score)
+                    elif hasattr(obj.metadata, 'distance') and obj.metadata.distance is not None:
+                        # Convert distance to similarity score (lower distance = higher similarity)
+                        score = max(0.0, 1.0 - float(obj.metadata.distance))
+                    else:
+                        # Fallback: rank-based score
+                        score = max(0.1, 1.0 - (rank * 0.1))
+                else:
+                    # Fallback: rank-based score
+                    score = max(0.1, 1.0 - (rank * 0.1))
+                
                 result = {
                     'content': obj.properties.get('text', ''),
                     'doc_id': obj.properties.get('doc_id', rank),
-                    'score': getattr(obj.metadata, 'score', 0.0) if hasattr(obj.metadata, 'score') else 0.0,
+                    'score': score,
                     'rank': rank + 1,
                     'search_type': 'hybrid'
                 }
@@ -192,10 +207,21 @@ class WeaviateSearchService:
             # Format results
             formatted_results = []
             for rank, obj in enumerate(results.objects):
+                # Get distance and convert to similarity score
+                score = 0.5  # Default score
+                if hasattr(obj, 'metadata') and obj.metadata and hasattr(obj.metadata, 'distance'):
+                    distance = obj.metadata.distance
+                    if distance is not None:
+                        # Convert distance to similarity score (lower distance = higher similarity)
+                        score = max(0.0, 1.0 - float(distance))
+                else:
+                    # Fallback: rank-based score
+                    score = max(0.1, 1.0 - (rank * 0.1))
+                
                 result = {
                     'content': obj.properties.get('text', ''),
                     'doc_id': obj.properties.get('doc_id', rank),
-                    'score': getattr(obj.metadata, 'distance', 1.0) if hasattr(obj.metadata, 'distance') else 1.0,
+                    'score': score,
                     'rank': rank + 1,
                     'search_type': 'vector'
                 }
@@ -232,10 +258,20 @@ class WeaviateSearchService:
             # Format results
             formatted_results = []
             for rank, obj in enumerate(results.objects):
+                # Get BM25 score
+                score = 0.5  # Default score
+                if hasattr(obj, 'metadata') and obj.metadata and hasattr(obj.metadata, 'score'):
+                    bm25_score = obj.metadata.score
+                    if bm25_score is not None:
+                        score = float(bm25_score)
+                else:
+                    # Fallback: rank-based score
+                    score = max(0.1, 1.0 - (rank * 0.1))
+                
                 result = {
                     'content': obj.properties.get('text', ''),
                     'doc_id': obj.properties.get('doc_id', rank),
-                    'score': getattr(obj.metadata, 'score', 0.0) if hasattr(obj.metadata, 'score') else 0.0,
+                    'score': score,
                     'rank': rank + 1,
                     'search_type': 'keyword'
                 }

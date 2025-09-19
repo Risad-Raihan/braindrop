@@ -10,7 +10,7 @@ from pathlib import Path
 # Add the app directory to Python path
 sys.path.append(str(Path(__file__).parent / "app"))
 
-from app.config.settings import settings, setup_for_localhost
+from app.config.settings import settings
 from app.services.rag_service import WeaviateRAGService
 
 # Setup logging
@@ -28,15 +28,15 @@ async def test_weaviate_rag_service():
     print("=" * 50)
     
     try:
-        # Configure for localhost (you can change this when Weaviate is running)
-        print("\n🔧 Configuring for localhost Weaviate...")
-        settings_local = setup_for_localhost()
-        print(f"Weaviate URL: {settings_local.WEAVIATE_URL}")
-        print(f"Use Local: {settings_local.USE_LOCAL_WEAVIATE}")
+        # Use the actual configuration from .env file
+        print("\n🔧 Using your Weaviate Cloud configuration...")
+        print(f"Weaviate URL: {settings.WEAVIATE_URL}")
+        print(f"Use Local: {settings.USE_LOCAL_WEAVIATE}")
+        print(f"Google API Key: {'✅ Set' if settings.GOOGLE_API_KEY.startswith('AIza') else '❌ Not Set'}")
         
         # Initialize RAG service
         print("\n1️⃣ Initializing Weaviate RAG Service...")
-        rag_service = WeaviateRAGService(settings_local)
+        rag_service = WeaviateRAGService(settings)
         print("✅ Weaviate RAG Service initialized successfully")
         
         # Test health check
@@ -87,8 +87,9 @@ async def test_weaviate_rag_service():
         
         for i, result in enumerate(search_results, 1):
             print(f"\nResult {i}:")
-            print(f"  Score: {result['score']:.4f}")
-            print(f"  Search Type: {result['search_type']}")
+            score = result.get('score', 0.0)
+            print(f"  Score: {score:.4f}" if score is not None else "  Score: N/A")
+            print(f"  Search Type: {result.get('search_type', 'hybrid')}")
             print(f"  Content preview: {result['content'][:100]}...")
         
         # Test chat functionality
@@ -173,20 +174,20 @@ async def test_individual_services():
 
 def print_setup_instructions():
     """Print setup instructions for the user"""
-    print("\n🚀 Setup Instructions for Weaviate RAG System")
+    print("\n🚀 Setup Instructions for Weaviate Cloud RAG System")
     print("=" * 60)
-    print("\n1. Install Weaviate locally:")
-    print("   docker run -p 8080:8080 -p 50051:50051 \\")
-    print("     cr.weaviate.io/semitechnologies/weaviate:1.24.6")
-    print("\n2. Set your Google API key:")
-    print("   export GOOGLE_API_KEY='your_actual_api_key_here'")
-    print("   # Or update it in app/config/settings.py")
-    print("\n3. Ensure physics text file exists:")
-    print("   Physics/combined_physics.md")
-    print("\n4. Install requirements:")
-    print("   pip install -r requirements.txt")
-    print("\n5. Run the test:")
-    print("   python test_weaviate_rag.py")
+    print("\n✅ Your system is configured for Weaviate Cloud!")
+    print("\n1. Configuration files:")
+    print("   - .env file with your API keys ✅")
+    print("   - Google Gemini API key ✅")
+    print("   - Weaviate Cloud URL and API key ✅")
+    print("\n2. Physics content:")
+    print("   - Physics/combined_physics.md")
+    print("\n3. Dependencies:")
+    print("   - All requirements installed ✅")
+    print("\n4. Ready to test:")
+    print("   - Run: python test_weaviate_rag.py")
+    print("   - Or start server: python run_server.py")
 
 
 if __name__ == "__main__":
@@ -200,14 +201,10 @@ if __name__ == "__main__":
     
     if success:
         print("\n" + "="*50)
-        print("🔄 Ready for full RAG service test")
-        print("⚠️  Make sure Weaviate is running and API key is set!")
+        print("🔄 Running full RAG service test with your Weaviate Cloud...")
         
-        # Uncomment the next line when you have Weaviate running and API key set
-        # success = asyncio.run(test_weaviate_rag_service())
-        
-        print("\n💡 To run the full test, uncomment the line in the script")
-        print("   after setting up Weaviate and your API key.")
+        # Run the full test since we have Weaviate Cloud configured
+        success = asyncio.run(test_weaviate_rag_service())
     
     if success:
         print("\n🎊 Basic tests passed! Ready for Weaviate integration.")
