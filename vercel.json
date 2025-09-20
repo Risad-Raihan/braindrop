@@ -1,6 +1,0 @@
-{
-  "buildCommand": "cd braindrop-platform && npm install && npm run build",
-  "outputDirectory": "braindrop-platform/.next",
-  "installCommand": "cd braindrop-platform && npm install",
-  "framework": "nextjs"
-}
